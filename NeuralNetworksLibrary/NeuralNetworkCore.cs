@@ -4,20 +4,19 @@ using System.Collections.Generic;
 namespace NeuralNetworksLibrary
 {
     // Parent class for a range of neural network
-    public class NeuralNetworkCore<DataType>
-        where DataType : IComparable, new()
+    public class NeuralNetworkCore
     {
         private static int ID;
 
-        protected List<NodeCore<DataType>> _Nodes = new List<NodeCore<DataType>>();
+       // protected List<NodeCore<DataType>> _Nodes = new List<NodeCore<DataType>>();
         protected int _NetworkID;
 
-        public List<NodeCore<DataType>> Nodes
+      /*  public List<NodeCore<DataType>> Nodes
         {
             get { return _Nodes; }
             set { _Nodes = value; }
         }
-
+        */
         public int NetworkID
         {
             get { return _NetworkID; }
@@ -37,7 +36,7 @@ namespace NeuralNetworksLibrary
         }
 
         // Add new empty node to network
-        protected virtual void AddNode()
+    /*    protected virtual void AddNode()
         {
             _Nodes.Add(new NodeCore<DataType>());
         }
@@ -47,7 +46,7 @@ namespace NeuralNetworksLibrary
         {
             _Nodes.Add(NewNode);
         }
-
+    */
         private int GetNewID()
         {
             return ID++;

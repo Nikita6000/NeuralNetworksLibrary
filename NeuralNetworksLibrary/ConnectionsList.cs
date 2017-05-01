@@ -4,18 +4,17 @@ using System.Text;
 
 namespace NeuralNetworksLibrary
 {
-    public class ConnectionsList<WeightType>
-        where WeightType : IComparable, new()
+    public class ConnectionsList
     {
         private List<List<int>> _ConnectionMatrix;
-        private Dictionary<Tuple<int, int>, WeightType> _Weight;
+        private Dictionary<Tuple<int, int>, double> _Weight;
         
         public List<List<int>> ConnectionMatrix
         {
             get { return _ConnectionMatrix; }
             set { _ConnectionMatrix = value; }
         }
-        public Dictionary<Tuple<int, int>, WeightType> Weight
+        public Dictionary<Tuple<int, int>, double> Weight
         {
             get { return _Weight; }
             set { _Weight = value; }
@@ -28,13 +27,13 @@ namespace NeuralNetworksLibrary
             //   InputNodeID = new List<int>();
 
             ConnectionMatrix = new List<List<int>>();
-            Weight = new Dictionary<Tuple<int, int>, WeightType>();
+            Weight = new Dictionary<Tuple<int, int>, double>();
         }
         
         public ConnectionsList(int NumberOfNodes)
         {
             ConnectionMatrix = new List<List<int>>();
-            Weight = new Dictionary<Tuple<int, int>, WeightType>();
+            Weight = new Dictionary<Tuple<int, int>, double>();
 
             for (int i = 0; i < NumberOfNodes; i++)
             {
@@ -42,7 +41,7 @@ namespace NeuralNetworksLibrary
             }
         }
 
-        public void AddConnection(int Output_Node_ID, int Input_Node_ID, WeightType Connection_Weight)
+        public void AddConnection(int Output_Node_ID, int Input_Node_ID, double Connection_Weight)
         {
             if (ConnectionMatrix.Count <= Output_Node_ID)
             {
@@ -58,25 +57,61 @@ namespace NeuralNetworksLibrary
         }
 
         // returns a weight of connection between specified nodes
-        public WeightType ConnectionWeight (int Output_Node_ID, int Input_Node_ID)
+        public double ConnectionWeight (int Output_Node_ID, int Input_Node_ID)
         {
             return Weight[Tuple.Create(Output_Node_ID, Input_Node_ID)];
         }
 
-        // returns a WeightType array of connections, with come out of node with ID = i
-        public WeightType[] this[int i]
+        // Code = 1 & default - multyplication
+        // Code = 2 - sum
+        // Code = 3 - replacement
+        public void ChangeConnectionWeight(int Output_Node_ID, int Input_Node_ID, double ChangeValue, int Code)
+        {
+            switch (Code)
+            {
+                case 3:
+                    Weight[Tuple.Create(Output_Node_ID, Input_Node_ID)] = ChangeValue;
+                    break;
+                case 2:
+                    Weight[Tuple.Create(Output_Node_ID, Input_Node_ID)] += ChangeValue;
+                    break;
+                case 1:
+                default:
+                    Weight[Tuple.Create(Output_Node_ID, Input_Node_ID)] *= ChangeValue;
+                    break;
+            }
+
+        }
+        
+        // returns a double array of connections, with come out of node with ID = i
+        public double[] this[int NodeID]
         {
             get
             {
-                WeightType[] Output = new WeightType[ConnectionMatrix[i].Count];
+                double[] Output = new double[ConnectionMatrix[NodeID].Count];
 
-                for (int j = 0; j < ConnectionMatrix[i].Count; j++)
+                for (int j = 0; j < ConnectionMatrix[NodeID].Count; j++)
                 {
-                    Output[j] = Weight[Tuple.Create(i, ConnectionMatrix[i][j])];
+                    Output[j] = Weight[Tuple.Create(NodeID, ConnectionMatrix[NodeID][j])];
                 }
 
                 return Output;
             }
+        }
+
+        public double[] ConnectedTo (int NodeID)
+        {
+            List<double> Output = new List<double>();
+
+            for (int OutpuConnectionNodeID = 0; OutpuConnectionNodeID < ConnectionMatrix.Count; OutpuConnectionNodeID++)
+            {
+                if (ConnectionMatrix[OutpuConnectionNodeID].Contains(NodeID))
+                {
+                    Output.Add(ConnectionWeight(OutpuConnectionNodeID, NodeID));
+                }
+            }
+
+            return Output.ToArray();
         }
     }
 }
